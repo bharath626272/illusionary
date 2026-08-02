@@ -1,20 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import About from './components/About';
-import Services from './components/Services';
-import TechStackIndustries from './components/TechStackIndustries';
-import WhyChooseUs from './components/WhyChooseUs';
-import Process from './components/Process';
-import Portfolio from './components/Portfolio';
-import Testimonials from './components/Testimonials';
-import FAQ from './components/FAQ';
-import ContactSection from './components/ContactSection';
-import Footer from './components/Footer';
+import Marquee from './components/Marquee';
 import CustomCursor from './components/CustomCursor';
 import ScrollProgress from './components/ScrollProgress';
-import Marquee from './components/Marquee';
 import AnimatedBackground from './components/AnimatedBackground';
+
+// Lazy load below-the-fold sections for instant first paint (< 100ms)
+const About = lazy(() => import('./components/About'));
+const Services = lazy(() => import('./components/Services'));
+const TechStackIndustries = lazy(() => import('./components/TechStackIndustries'));
+const WhyChooseUs = lazy(() => import('./components/WhyChooseUs'));
+const Process = lazy(() => import('./components/Process'));
+const Portfolio = lazy(() => import('./components/Portfolio'));
+const Testimonials = lazy(() => import('./components/Testimonials'));
+const FAQ = lazy(() => import('./components/FAQ'));
+const ContactSection = lazy(() => import('./components/ContactSection'));
+const Footer = lazy(() => import('./components/Footer'));
 
 export default function App() {
   const [theme, setTheme] = useState('dark');
@@ -48,19 +50,30 @@ export default function App() {
       <main>
         <Hero />
         <Marquee />
-        <About />
-        <Services />
-        <TechStackIndustries />
-        <WhyChooseUs />
-        <Process />
-        <Portfolio />
-        <Testimonials />
-        <FAQ />
-        <ContactSection />
+
+        {/* Deferred Loading for High Performance */}
+        <Suspense fallback={
+          <div className="py-24 text-center text-sub text-sm">
+            <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            Loading Nexora Digital Experience...
+          </div>
+        }>
+          <About />
+          <Services />
+          <TechStackIndustries />
+          <WhyChooseUs />
+          <Process />
+          <Portfolio />
+          <Testimonials />
+          <FAQ />
+          <ContactSection />
+        </Suspense>
       </main>
 
-      {/* Footer */}
-      <Footer />
+      {/* Deferred Footer */}
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
     </div>
   );
 }
