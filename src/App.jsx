@@ -44,13 +44,12 @@ export default function App() {
       {/* Brand Opening Reveal Preloader */}
       <Preloader onComplete={() => setIsAppLoaded(true)} />
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: isAppLoaded ? 1 : 0 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        className={`min-h-screen relative transition-colors duration-300 ${
-          theme === 'dark' ? 'bg-[#07080d] text-[#cbd5e1]' : 'bg-[#f8fafd] text-[#334155]'
-        }`}
+        className={`min-h-screen relative transition-colors duration-300 ${theme === 'dark' ? 'bg-[#07080d] text-[#cbd5e1]' : 'bg-[#f8fafd] text-[#334155]'
+          }`}
       >
         {/* Dynamic Animated Ambient Background Orbs & Dust */}
         <AnimatedBackground theme={theme} />
