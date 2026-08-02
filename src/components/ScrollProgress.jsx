@@ -13,7 +13,7 @@ export default function ScrollProgress() {
   });
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-[100] pointer-events-none">
+    <div className="fixed top-0 left-0 right-0 z-[1000] pointer-events-none">
       {/* Background track indicator */}
       <div className="h-[3px] w-full bg-white/10 dark:bg-white/10 light:bg-slate-200" />
       

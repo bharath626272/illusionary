@@ -183,36 +183,36 @@ export default function Portfolio() {
         <AnimatePresence>
           {selectedProject && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
-              onClick={() => setSelectedProject(null)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md p-3 sm:p-6 flex items-center justify-center overflow-y-auto"
+            onClick={() => setSelectedProject(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="glass-card max-w-2xl w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-white/20 shadow-2xl relative max-h-[88vh] overflow-y-auto my-auto"
             >
-              <motion.div
-                initial={{ scale: 0.9, y: 20 }}
-                animate={{ scale: 1, y: 0 }}
-                exit={{ scale: 0.9, y: 20 }}
-                onClick={(e) => e.stopPropagation()}
-                className="glass-card max-w-2xl w-full rounded-3xl overflow-hidden border border-white/20 shadow-2xl relative max-h-[90vh] overflow-y-auto my-auto"
-              >
-                {/* Header Banner */}
-                <div className={`h-44 bg-gradient-to-tr ${selectedProject.gradient} p-8 flex flex-col justify-between relative`}>
-                  <button
-                    onClick={() => setSelectedProject(null)}
-                    className="absolute top-4 right-4 p-2 rounded-full bg-black/50 text-white hover:bg-black transition-colors"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
+              {/* Header Banner */}
+              <div className={`h-36 sm:h-44 bg-gradient-to-tr ${selectedProject.gradient} p-5 sm:p-8 flex flex-col justify-between relative`}>
+                <button
+                  onClick={() => setSelectedProject(null)}
+                  className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 p-2 rounded-full bg-black/50 text-white hover:bg-black transition-colors"
+                >
+                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                </button>
 
-                  <span className="text-xs font-bold px-3 py-1 rounded-full bg-black/40 text-white w-fit">
-                    {selectedProject.category}
-                  </span>
+                <span className="text-xs font-bold px-3 py-1 rounded-full bg-black/40 text-white w-fit">
+                  {selectedProject.category}
+                </span>
 
-                  <h3 className="text-2xl font-extrabold text-white drop-shadow-md">
-                    {selectedProject.title}
-                  </h3>
-                </div>
+                <h3 className="text-xl sm:text-2xl font-extrabold text-white drop-shadow-md pr-6">
+                  {selectedProject.title}
+                </h3>
+              </div>
 
                 {/* Modal Body */}
                 <div className="p-8 space-y-6">

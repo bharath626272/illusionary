@@ -35,6 +35,12 @@ export default function App() {
 
   return (
     <>
+      {/* Top Spring Scroll Progress Bar (Anchored to Viewport Window Top) */}
+      <ScrollProgress />
+
+      {/* Custom Mouse Cursor Glow */}
+      <CustomCursor />
+
       {/* Brand Opening Reveal Preloader */}
       <Preloader onComplete={() => setIsAppLoaded(true)} />
 
@@ -48,12 +54,6 @@ export default function App() {
       >
         {/* Dynamic Animated Ambient Background Orbs & Dust */}
         <AnimatedBackground theme={theme} />
-
-        {/* Top Spring Scroll Progress Bar */}
-        <ScrollProgress />
-
-        {/* Custom Mouse Cursor Glow */}
-        <CustomCursor />
 
         {/* Navbar */}
         <Navbar theme={theme} toggleTheme={toggleTheme} activeSection={activeSection} />

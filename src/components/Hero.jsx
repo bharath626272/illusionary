@@ -64,14 +64,14 @@ export default function Hero() {
           initial={{ opacity: 0, y: -20, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.6, type: 'spring', stiffness: 120 }}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full glass-panel border border-indigo-500/40 text-indigo-300 text-xs sm:text-sm font-semibold mb-8 shadow-xl shadow-indigo-500/10 hover:border-cyan-400/60 transition-all cursor-default"
+          className="inline-flex items-center gap-2 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-full glass-panel border border-indigo-500/40 text-indigo-300 text-xs sm:text-sm font-semibold mb-6 sm:mb-8 shadow-xl shadow-indigo-500/10 hover:border-cyan-400/60 transition-all cursor-default max-w-full text-center"
         >
-          <span className="flex h-2 w-2 relative">
+          <span className="flex h-2 w-2 relative flex-shrink-0">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
           </span>
-          <Sparkles className="w-4 h-4 text-indigo-400 animate-spin-slow" />
-          <span>Nexora Digital — Your Complete Digital Solutions Partner</span>
+          <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-400 animate-spin-slow flex-shrink-0" />
+          <span className="truncate">Nexora Digital — Complete Digital Solutions Partner</span>
         </motion.div>
 
         {/* Main Headline with Staggered Word Reveal */}
@@ -79,19 +79,19 @@ export default function Hero() {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="max-w-5xl mx-auto mb-8"
+          className="max-w-5xl mx-auto mb-6 sm:mb-8"
         >
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-heading leading-[1.25] pb-2">
-            <motion.span variants={itemVariants} className="inline-block mr-3">
+          <h1 className="text-3xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-heading leading-[1.25] pb-2 break-words">
+            <motion.span variants={itemVariants} className="inline-block mr-2 sm:mr-3">
               Transform
             </motion.span>
-            <motion.span variants={itemVariants} className="inline-block mr-3">
+            <motion.span variants={itemVariants} className="inline-block mr-2 sm:mr-3">
               Your
             </motion.span>
-            <motion.span variants={itemVariants} className="inline-block mr-3">
+            <motion.span variants={itemVariants} className="inline-block mr-2 sm:mr-3">
               Business
             </motion.span>
-            <motion.span variants={itemVariants} className="inline-block mr-3">
+            <motion.span variants={itemVariants} className="inline-block mr-2 sm:mr-3">
               with
             </motion.span>
             <br className="hidden sm:inline" />
