@@ -2,13 +2,13 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 export default function AnimatedBackground({ theme }) {
-  // Optimized dust particles for 60fps/120fps mobile performance
-  const particles = Array.from({ length: 12 }, (_, i) => ({
+  // Dust particles array
+  const particles = Array.from({ length: 18 }, (_, i) => ({
     id: i,
     size: Math.random() * 4 + 2,
     x: Math.random() * 100,
     y: Math.random() * 100,
-    duration: Math.random() * 14 + 12,
+    duration: Math.random() * 14 + 10,
     delay: Math.random() * 4,
   }));
 
@@ -27,66 +27,87 @@ export default function AnimatedBackground({ theme }) {
         />
       )}
 
-      {/* Floating Orb 1: Top Left - Indigo / Sapphire */}
+      {/* Floating Orb 1: Top Left - Indigo / Sapphire (Identical Size & Glow on All Devices) */}
       <motion.div
         animate={{
-          x: [0, 60, -40, 0],
-          y: [0, -50, 40, 0],
+          x: [0, 70, -50, 0],
+          y: [0, -60, 45, 0],
           scale: [1, 1.15, 0.95, 1],
+          rotate: [0, 120, 240, 360],
         }}
         transition={{
-          duration: 24,
+          duration: 22,
           repeat: Infinity,
           ease: 'easeInOut',
         }}
-        className="absolute -top-[12%] left-[10%] w-[500px] sm:w-[600px] h-[500px] sm:h-[600px] rounded-full blur-[70px] sm:blur-[80px] gpu-layer"
+        className="absolute -top-[12%] left-[5%] w-[600px] h-[600px] rounded-full blur-[85px] gpu-layer"
         style={{
           background: isDark
-            ? 'radial-gradient(circle, rgba(110, 139, 255, 0.2) 0%, rgba(62, 214, 245, 0.04) 60%, transparent 80%)'
-            : 'radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(59, 130, 246, 0.1) 50%, transparent 80%)',
+            ? 'radial-gradient(circle, rgba(110, 139, 255, 0.22) 0%, rgba(62, 214, 245, 0.05) 60%, transparent 80%)'
+            : 'radial-gradient(circle, rgba(99, 102, 241, 0.28) 0%, rgba(59, 130, 246, 0.12) 50%, transparent 80%)',
           willChange: 'transform',
         }}
       />
 
-      {/* Floating Orb 2: Middle Right - Cyan / Teal */}
+      {/* Floating Orb 2: Middle Right - Cyan / Teal (Identical Size & Glow on All Devices) */}
       <motion.div
         animate={{
-          x: [0, -70, 50, 0],
-          y: [0, 60, -50, 0],
+          x: [0, -80, 60, 0],
+          y: [0, 70, -55, 0],
           scale: [1, 1.2, 0.95, 1],
-        }}
-        transition={{
-          duration: 28,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-        className="absolute top-[30%] -right-[12%] w-[550px] sm:w-[650px] h-[550px] sm:h-[650px] rounded-full blur-[75px] sm:blur-[85px] gpu-layer"
-        style={{
-          background: isDark
-            ? 'radial-gradient(circle, rgba(62, 214, 245, 0.16) 0%, rgba(168, 85, 247, 0.06) 65%, transparent 85%)'
-            : 'radial-gradient(circle, rgba(20, 184, 166, 0.2) 0%, rgba(6, 182, 212, 0.12) 60%, transparent 80%)',
-          willChange: 'transform',
-        }}
-      />
-
-      {/* Floating Orb 3: Bottom Left - Violet / Rose */}
-      <motion.div
-        animate={{
-          x: [0, 80, -40, 0],
-          y: [0, -60, 50, 0],
-          scale: [0.95, 1.15, 1, 0.95],
         }}
         transition={{
           duration: 26,
           repeat: Infinity,
           ease: 'easeInOut',
         }}
-        className="absolute bottom-[5%] -left-[12%] w-[480px] sm:w-[550px] h-[480px] sm:h-[550px] rounded-full blur-[70px] sm:blur-[80px] gpu-layer"
+        className="absolute top-[28%] -right-[10%] w-[650px] h-[650px] rounded-full blur-[85px] gpu-layer"
         style={{
           background: isDark
-            ? 'radial-gradient(circle, rgba(168, 85, 247, 0.14) 0%, rgba(110, 139, 255, 0.05) 60%, transparent 80%)'
-            : 'radial-gradient(circle, rgba(217, 70, 239, 0.18) 0%, rgba(244, 63, 94, 0.1) 60%, transparent 80%)',
+            ? 'radial-gradient(circle, rgba(62, 214, 245, 0.18) 0%, rgba(168, 85, 247, 0.08) 65%, transparent 85%)'
+            : 'radial-gradient(circle, rgba(20, 184, 166, 0.24) 0%, rgba(6, 182, 212, 0.15) 60%, transparent 80%)',
           willChange: 'transform',
+        }}
+      />
+
+      {/* Floating Orb 3: Bottom Left - Violet / Rose (Identical Size & Glow on All Devices) */}
+      <motion.div
+        animate={{
+          x: [0, 90, -45, 0],
+          y: [0, -70, 60, 0],
+          scale: [0.95, 1.18, 1, 0.95],
+        }}
+        transition={{
+          duration: 24,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+        className="absolute bottom-[5%] -left-[10%] w-[550px] h-[550px] rounded-full blur-[85px] gpu-layer"
+        style={{
+          background: isDark
+            ? 'radial-gradient(circle, rgba(168, 85, 247, 0.16) 0%, rgba(110, 139, 255, 0.06) 60%, transparent 80%)'
+            : 'radial-gradient(circle, rgba(217, 70, 239, 0.22) 0%, rgba(244, 63, 94, 0.12) 60%, transparent 80%)',
+          willChange: 'transform',
+        }}
+      />
+
+      {/* Floating Orb 4: Center Sapphire Pulse Glow */}
+      <motion.div
+        animate={{
+          scale: [0.9, 1.15, 0.9],
+          opacity: [0.4, 0.65, 0.4],
+        }}
+        transition={{
+          duration: 16,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+        className="absolute top-[55%] right-[20%] w-[480px] h-[480px] rounded-full blur-[85px] gpu-layer"
+        style={{
+          background: isDark
+            ? 'radial-gradient(circle, rgba(110, 139, 255, 0.14) 0%, transparent 70%)'
+            : 'radial-gradient(circle, rgba(59, 130, 246, 0.18) 0%, rgba(147, 51, 234, 0.1) 65%, transparent 80%)',
+          willChange: 'transform, opacity',
         }}
       />
 
