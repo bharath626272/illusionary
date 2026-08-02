@@ -1,0 +1,239 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+:root, [data-theme="dark"] {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  --bg-main: #07080d;
+  --bg-card: #0d0f18;
+  --bg-card-hover: #131726;
+  --bg-glass: rgba(13, 15, 24, 0.82);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-glow: rgba(110, 139, 255, 0.35);
+  --text-heading: #ffffff;
+  --text-body: #cbd5e1;
+  --text-sub: #94a3b8;
+  --accent-primary: #6e8bff;
+  --accent-secondary: #3ed6f5;
+  --accent-gradient: linear-gradient(135deg, #6e8bff 0%, #3ed6f5 100%);
+  --accent-gradient-hover: linear-gradient(135deg, #5b79f8 0%, #2bcbf2 100%);
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 30px rgba(110, 139, 255, 0.18);
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+  --badge-bg: rgba(110, 139, 255, 0.1);
+  --badge-border: rgba(110, 139, 255, 0.3);
+  --badge-text: #a5b4fc;
+  --pill-bg: rgba(255, 255, 255, 0.06);
+  --pill-border: rgba(255, 255, 255, 0.1);
+  --pill-text: #e2e8f0;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-card-hover: #ffffff;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+  --border-color: rgba(226, 232, 240, 0.9);
+  --border-glow: rgba(79, 70, 229, 0.4);
+  --text-heading: #0f172a;
+  --text-body: #334155;
+  --text-sub: #475569;
+  --accent-primary: #4f46e5;
+  --accent-secondary: #0891b2;
+  --accent-gradient: linear-gradient(135deg, #4f46e5 0%, #0891b2 100%);
+  --accent-gradient-hover: linear-gradient(135deg, #4338ca 0%, #0e7490 100%);
+  --shadow-card: 0 10px 30px -5px rgba(15, 23, 42, 0.05), 0 4px 6px -2px rgba(15, 23, 42, 0.02);
+  --shadow-glow: 0 20px 35px -5px rgba(79, 70, 229, 0.18);
+  --badge-bg: rgba(79, 70, 229, 0.08);
+  --badge-border: rgba(79, 70, 229, 0.2);
+  --badge-text: #4338ca;
+  --pill-bg: #f1f5f9;
+  --pill-border: rgba(203, 213, 225, 0.7);
+  --pill-text: #0f172a;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-body);
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+svg {
+  shape-rendering: geometricPrecision;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -0.025em;
+  color: var(--text-heading);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(110, 139, 255, 0.3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(110, 139, 255, 0.6);
+}
+
+/* GPU Performance Offloading */
+.gpu-layer {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Glassmorphism utilities */
+.glass-panel {
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  color: var(--text-body);
+  box-shadow: var(--shadow-card);
+  transform: translate3d(0, 0, 0);
+  will-change: transform, box-shadow;
+  backface-visibility: hidden;
+}
+
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  color: var(--text-body);
+  box-shadow: var(--shadow-card);
+  transform: translate3d(0, 0, 0);
+  will-change: transform, box-shadow;
+  backface-visibility: hidden;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.25s ease, 
+              box-shadow 0.25s ease,
+              background-color 0.25s ease;
+}
+
+.glass-card:hover {
+  border-color: var(--border-glow);
+  box-shadow: var(--shadow-glow);
+}
+
+/* Typography Utility Classes */
+.text-heading {
+  color: var(--text-heading) !important;
+}
+
+.text-body {
+  color: var(--text-body) !important;
+}
+
+.text-sub {
+  color: var(--text-sub) !important;
+}
+
+/* Text Gradients */
+.text-gradient {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Badge styles */
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  background: var(--badge-bg);
+  border: 1px solid var(--badge-border);
+  color: var(--badge-text);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* Tag Pill */
+.tag-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--pill-bg);
+  border: 1px solid var(--pill-border);
+  color: var(--pill-text);
+}
+
+/* Primary Button */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 28px;
+  border-radius: var(--radius-full);
+  background: var(--accent-gradient);
+  color: #ffffff !important;
+  font-weight: 700;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 6px 25px rgba(79, 70, 229, 0.35);
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 35px rgba(79, 70, 229, 0.5);
+  background: var(--accent-gradient-hover);
+}
+
+/* Secondary Button */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 28px;
+  border-radius: var(--radius-full);
+  background: var(--pill-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-heading) !important;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  box-shadow: var(--shadow-card);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-glow);
+  transform: translateY(-2px);
+}
