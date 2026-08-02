@@ -35,52 +35,42 @@ export default function ContactSection() {
     setLoading(true);
     setError(null);
 
+    const inquiryId = `NEX-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    const payload = { ...formData, inquiryId };
+
     const appscriptUrl = import.meta.env?.VITE_APPSCRIPT_URL || 'https://script.google.com/macros/s/AKfycbwvwyhOuJbdm9btp_7cp6cDNnUA14GW_IWak-PT26GADlekX9KNCQzQ553YgbcIEirORw/exec';
 
+    // 1. Send directly to Google Apps Script Webhook (no-cors mode avoids preflight CORS blocks)
     try {
-      // 1. Submit to primary backend endpoint
-      const response = await fetch('/api/contact', {
+      await fetch(appscriptUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+    } catch (scriptErr) {
+      console.warn('Apps Script Webhook Warning:', scriptErr);
+    }
+
+    // 2. Also send to local backend endpoint if running locally
+    try {
+      await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
-
-      const result = await response.json();
-
-      // 2. Post to Google Apps Script Web App if configured
-      if (appscriptUrl) {
-        try {
-          await fetch(appscriptUrl, {
-            method: 'POST',
-            mode: 'no-cors', // Apps Script requires no-cors for cross-domain redirects
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              ...formData,
-              inquiryId: result.inquiryId || `NEX-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
-            })
-          });
-        } catch (scriptErr) {
-          console.warn('Apps Script Webhook Warning:', scriptErr);
-        }
-      }
-
-      if (response.ok && result.success) {
-        setSubmitted(result);
-        setFormData({ name: '', email: '', service: 'Website Development', details: '' });
-      } else {
-        setError(result.error || 'Failed to submit form. Please try again.');
-      }
-    } catch (err) {
-      console.error('Contact API Error:', err);
-      // Fallback local success if backend offline
-      setSubmitted({
-        success: true,
-        message: 'Thank you! Your free consultation request has been received. Our team will contact you within 2 hours.',
-        inquiryId: `NEX-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
-      });
-    } finally {
-      setLoading(false);
+    } catch (apiErr) {
+      // Local backend API not available on static hosting like Netlify, ignore
     }
+
+    // Always show success feedback to client
+    setSubmitted({
+      success: true,
+      message: 'Thank you! Your free consultation request has been received. Our team will contact you within 2 hours.',
+      inquiryId: inquiryId
+    });
+    setFormData({ name: '', email: '', service: 'Website Development', details: '' });
+    setLoading(false);
   };
 
   return (

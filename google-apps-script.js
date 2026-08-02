@@ -2,22 +2,6 @@
  * Nexora Digital — Contact Form Google Apps Script
  * Configured specifically for Sheet ID: 1_k1fHgUo-a5GcIRhaiwvv12JPbGSameZqPV4ntJBkhs
  * Admin Notification Email: tigerreddy6272@gmail.com
- * 
- * INSTRUCTIONS TO DEPLOY IN GOOGLE APPS SCRIPT:
- * 1. Go to https://script.google.com/home and click "New project"
- *    OR in your Google Sheet (https://docs.google.com/spreadsheets/d/1_k1fHgUo-a5GcIRhaiwvv12JPbGSameZqPV4ntJBkhs)
- *    click Extensions > Apps Script.
- * 2. Delete any code in the editor and PASTE THIS ENTIRE FILE.
- * 3. Click the Save icon (Ctrl+S or Cmd+S).
- * 4. Click Deploy > New deployment.
- * 5. Click the gear icon (Select type) and choose "Web app".
- *    - Description: Contact Form Webhook
- *    - Execute as: Me (tigerreddy6272@gmail.com)
- *    - Who has access: Anyone
- * 6. Click "Deploy", grant permissions when prompted (Advanced > Go to project).
- * 7. Copy your Web App URL (looks like: https://script.google.com/macros/s/AKfycb.../exec).
- * 8. Add it to your project `.env` file as:
- *    VITE_APPSCRIPT_URL=https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec
  */
 
 const SPREADSHEET_ID = "1_k1fHgUo-a5GcIRhaiwvv12JPbGSameZqPV4ntJBkhs";
@@ -25,7 +9,16 @@ const ADMIN_EMAIL = "tigerreddy6272@gmail.com";
 
 function doPost(e) {
   try {
-    const data = JSON.parse(e.postData.contents);
+    let data = {};
+    if (e && e.postData && e.postData.contents) {
+      try {
+        data = JSON.parse(e.postData.contents);
+      } catch (err) {
+        data = e.parameter || {};
+      }
+    } else if (e && e.parameter) {
+      data = e.parameter;
+    }
     
     // Open the spreadsheet by ID
     let ss;
