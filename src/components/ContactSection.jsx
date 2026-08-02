@@ -131,22 +131,22 @@ export default function ContactSection() {
             viewport={{ once: true }}
             className="lg:col-span-7"
           >
-            <div className="glass-card p-8 sm:p-10 rounded-3xl border border-white/15 shadow-2xl relative">
+            <div className="glass-card p-5 sm:p-10 rounded-2xl sm:rounded-3xl border border-white/15 shadow-2xl relative">
               <AnimatePresence mode="wait">
                 {submitted ? (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0 }}
-                    className="text-center py-10 space-y-6"
+                    className="text-center py-8 sm:py-10 space-y-5 sm:space-y-6"
                   >
-                    <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/40">
-                      <CheckCircle2 className="w-10 h-10" />
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/40">
+                      <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10" />
                     </div>
 
-                    <h3 className="text-2xl font-bold text-heading">Consultation Requested!</h3>
+                    <h3 className="text-xl sm:text-2xl font-bold text-heading">Consultation Requested!</h3>
                     
-                    <p className="text-sm text-sub max-w-md mx-auto leading-relaxed">
+                    <p className="text-xs sm:text-sm text-sub max-w-md mx-auto leading-relaxed">
                       {submitted.message}
                     </p>
 
@@ -164,8 +164,8 @@ export default function ContactSection() {
                     </div>
                   </motion.div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                       <div>
                         <label className="block text-xs font-semibold text-sub mb-2">Name *</label>
                         <div className="relative">
@@ -177,7 +177,7 @@ export default function ContactSection() {
                             value={formData.name}
                             onChange={handleChange}
                             placeholder="Your Full Name"
-                            className="w-full pl-10 pr-4 py-3 glass-panel rounded-xl text-sm text-heading placeholder-gray-400 focus:outline-none focus:border-indigo-500 transition-colors"
+                            className="w-full pl-10 pr-4 py-3 glass-panel rounded-xl text-xs sm:text-sm text-heading placeholder-gray-400 focus:outline-none focus:border-indigo-500 transition-colors"
                           />
                         </div>
                       </div>
@@ -193,7 +193,7 @@ export default function ContactSection() {
                             value={formData.email}
                             onChange={handleChange}
                             placeholder="name@company.com"
-                            className="w-full pl-10 pr-4 py-3 glass-panel rounded-xl text-sm text-heading placeholder-gray-400 focus:outline-none focus:border-indigo-500 transition-colors"
+                            className="w-full pl-10 pr-4 py-3 glass-panel rounded-xl text-xs sm:text-sm text-heading placeholder-gray-400 focus:outline-none focus:border-indigo-500 transition-colors"
                           />
                         </div>
                       </div>
@@ -205,7 +205,7 @@ export default function ContactSection() {
                         name="service"
                         value={formData.service}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 glass-panel rounded-xl text-sm text-heading focus:outline-none focus:border-indigo-500 transition-colors"
+                        className="w-full px-4 py-3 glass-panel rounded-xl text-xs sm:text-sm text-heading focus:outline-none focus:border-indigo-500 transition-colors"
                       >
                         {servicesList.map((svc) => (
                           <option key={svc} value={svc} className="bg-[#0d0f18] text-white light:bg-white light:text-slate-900">{svc}</option>
@@ -223,7 +223,7 @@ export default function ContactSection() {
                           value={formData.details}
                           onChange={handleChange}
                           placeholder="What goals, timeline, or scope do you have in mind?"
-                          className="w-full pl-10 pr-4 py-3 glass-panel rounded-xl text-sm text-heading placeholder-gray-400 focus:outline-none focus:border-indigo-500 transition-colors"
+                          className="w-full pl-10 pr-4 py-3 glass-panel rounded-xl text-xs sm:text-sm text-heading placeholder-gray-400 focus:outline-none focus:border-indigo-500 transition-colors"
                         />
                       </div>
                     </div>
@@ -237,7 +237,7 @@ export default function ContactSection() {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="btn-primary w-full justify-center py-4 text-base font-bold shadow-lg shadow-indigo-500/25"
+                      className="btn-primary w-full justify-center py-3.5 sm:py-4 text-sm sm:text-base font-bold shadow-lg shadow-indigo-500/25"
                     >
                       {loading ? (
                         <span>Processing Request...</span>
