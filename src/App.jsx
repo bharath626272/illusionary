@@ -60,7 +60,7 @@ export default function App() {
 
         {/* Main Sections */}
         <main>
-          <Hero />
+          <Hero theme={theme} />
           <Marquee />
 
           {/* Deferred Loading for High Performance */}
