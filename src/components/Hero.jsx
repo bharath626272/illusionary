@@ -190,8 +190,8 @@ export default function Hero({ theme = 'dark' }) {
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
-    // Cap DPR at 1.5 for maximum fill rate performance
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    // Cap DPR for mobile at 1.0 and desktop at 1.5 for maximum fill rate performance
+    const dpr = window.innerWidth < 768 ? 1.0 : Math.min(window.devicePixelRatio || 1, 1.5);
 
     const resizeCanvas = () => {
       if (containerRef.current) {

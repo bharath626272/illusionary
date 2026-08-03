@@ -9,7 +9,7 @@ export default function Preloader({ onComplete }) {
     const timer = setTimeout(() => {
       setLoading(false);
       if (onComplete) onComplete();
-    }, 1100);
+    }, 380);
 
     return () => clearTimeout(timer);
   }, [onComplete]);
@@ -54,7 +54,7 @@ export default function Preloader({ onComplete }) {
               <motion.div
                 initial={{ width: '0%' }}
                 animate={{ width: '100%' }}
-                transition={{ duration: 0.9, ease: 'easeInOut' }}
+                transition={{ duration: 0.35, ease: 'easeInOut' }}
                 className="h-full bg-gradient-to-r from-indigo-500 via-cyan-400 to-emerald-400 rounded-full"
               />
             </div>

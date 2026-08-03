@@ -40,7 +40,7 @@ export default function AnimatedBackground({ theme }) {
           repeat: Infinity,
           ease: 'easeInOut',
         }}
-        className="absolute -top-[12%] left-[5%] w-[600px] h-[600px] rounded-full blur-[85px] gpu-layer"
+        className="absolute -top-[12%] left-[5%] w-[600px] h-[600px] rounded-full blur-[40px] md:blur-[85px] gpu-layer"
         style={{
           background: isDark
             ? 'radial-gradient(circle, rgba(110, 139, 255, 0.22) 0%, rgba(62, 214, 245, 0.05) 60%, transparent 80%)'
@@ -61,7 +61,7 @@ export default function AnimatedBackground({ theme }) {
           repeat: Infinity,
           ease: 'easeInOut',
         }}
-        className="absolute top-[28%] -right-[10%] w-[650px] h-[650px] rounded-full blur-[85px] gpu-layer"
+        className="absolute top-[28%] -right-[10%] w-[650px] h-[650px] rounded-full blur-[40px] md:blur-[85px] gpu-layer"
         style={{
           background: isDark
             ? 'radial-gradient(circle, rgba(62, 214, 245, 0.18) 0%, rgba(168, 85, 247, 0.08) 65%, transparent 85%)'
@@ -82,7 +82,7 @@ export default function AnimatedBackground({ theme }) {
           repeat: Infinity,
           ease: 'easeInOut',
         }}
-        className="absolute bottom-[5%] -left-[10%] w-[550px] h-[550px] rounded-full blur-[85px] gpu-layer"
+        className="absolute bottom-[5%] -left-[10%] w-[550px] h-[550px] rounded-full blur-[40px] md:blur-[85px] gpu-layer"
         style={{
           background: isDark
             ? 'radial-gradient(circle, rgba(168, 85, 247, 0.16) 0%, rgba(110, 139, 255, 0.06) 60%, transparent 80%)'
@@ -102,7 +102,7 @@ export default function AnimatedBackground({ theme }) {
           repeat: Infinity,
           ease: 'easeInOut',
         }}
-        className="absolute top-[55%] right-[20%] w-[480px] h-[480px] rounded-full blur-[85px] gpu-layer"
+        className="absolute top-[55%] right-[20%] w-[480px] h-[480px] rounded-full blur-[40px] md:blur-[85px] gpu-layer"
         style={{
           background: isDark
             ? 'radial-gradient(circle, rgba(110, 139, 255, 0.14) 0%, transparent 70%)'
