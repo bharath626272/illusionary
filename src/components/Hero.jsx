@@ -58,7 +58,7 @@ export default function Hero({ theme = 'dark' }) {
   const [isRunning, setIsRunning] = useState(false);
   const [executionOutput, setExecutionOutput] = useState(null);
 
-  const FULL_LINE_1 = "Transform Your Business with";
+  const FULL_LINE_1 = "Transform Your Business with ";
   const FULL_LINE_2 = "Digital Solutions.";
 
   const [text1, setText1] = useState("");
@@ -210,7 +210,7 @@ export default function Hero({ theme = 'dark' }) {
           <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-[var(--text-heading)] leading-[1.08] relative">
             <span>{text1}</span>
             {!isLine1Done && <span className="typewriter-cursor" />}
-            <br className="hidden sm:inline" />
+            <br className="hidden sm:inline" />{" "}
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--text-heading)] via-[var(--text-body)] to-[var(--text-sub)]">
               {text2}
             </span>
