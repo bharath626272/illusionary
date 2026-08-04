@@ -308,3 +308,21 @@ h1, h2, h3, h4, h5, h6 {
   0% { transform: scale(0.8); opacity: 0.8; }
   100% { transform: scale(2.2); opacity: 0; }
 }
+
+/* Typewriter Caret Animation */
+@keyframes blink-caret {
+  from, to { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+.typewriter-cursor {
+  display: inline-block;
+  width: 3px;
+  height: 0.85em;
+  background-color: var(--text-heading, #ffffff);
+  margin-left: 4px;
+  vertical-align: middle;
+  animation: blink-caret 0.75s infinite;
+}
+
+

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowRight, Check, Copy, Terminal, Code2, Sparkles, Play, RotateCcw,
@@ -57,6 +57,69 @@ export default function Hero({ theme = 'dark' }) {
   const [copied, setCopied] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [executionOutput, setExecutionOutput] = useState(null);
+
+  const FULL_LINE_1 = "Transform Your Business with";
+  const FULL_LINE_2 = "Digital Solutions.";
+
+  const [text1, setText1] = useState("");
+  const [text2, setText2] = useState("");
+  const [isLine1Done, setIsLine1Done] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    let pauseTimer;
+    let timer1;
+    let timer2;
+
+    const startTypingSequence = () => {
+      let index1 = 0;
+      let index2 = 0;
+      setText1("");
+      setText2("");
+      setIsLine1Done(false);
+
+      // Step 1: Type Line 1
+      timer1 = setInterval(() => {
+        if (!isMounted) return clearInterval(timer1);
+
+        if (index1 < FULL_LINE_1.length) {
+          setText1(FULL_LINE_1.substring(0, index1 + 1));
+          index1++;
+        } else {
+          clearInterval(timer1);
+          setIsLine1Done(true);
+
+          // Step 2: Type Line 2
+          timer2 = setInterval(() => {
+            if (!isMounted) return clearInterval(timer2);
+
+            if (index2 < FULL_LINE_2.length) {
+              setText2(FULL_LINE_2.substring(0, index2 + 1));
+              index2++;
+            } else {
+              clearInterval(timer2);
+
+              // Step 3: Pause 10s then loop infinitely
+              pauseTimer = setTimeout(() => {
+                if (isMounted) {
+                  startTypingSequence();
+                }
+              }, 10000);
+            }
+          }, 55);
+        }
+      }, 40);
+    };
+
+    startTypingSequence();
+
+    return () => {
+      isMounted = false;
+      clearInterval(timer1);
+      clearInterval(timer2);
+      clearTimeout(pauseTimer);
+    };
+  }, []);
 
   const currentCode = codeExamples[activeTab];
 
@@ -137,18 +200,21 @@ export default function Hero({ theme = 'dark' }) {
           </a>
         </motion.div>
 
-        {/* Main Headline */}
+        {/* Main Headline with Typewriter Animation */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           className="max-w-5xl mx-auto mb-6"
         >
-          <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-[var(--text-heading)] leading-[1.08]">
-            Transform Your Business with <br className="hidden sm:inline" />
+          <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-[var(--text-heading)] leading-[1.08] relative">
+            <span>{text1}</span>
+            {!isLine1Done && <span className="typewriter-cursor" />}
+            <br className="hidden sm:inline" />
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--text-heading)] via-[var(--text-body)] to-[var(--text-sub)]">
-              Digital Solutions.
+              {text2}
             </span>
+            {isLine1Done && <span className="typewriter-cursor" />}
           </h1>
         </motion.div>
 
