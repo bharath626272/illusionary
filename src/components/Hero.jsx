@@ -200,7 +200,7 @@ export default function Hero({ theme = 'dark' }) {
           </a>
         </motion.div>
 
-        {/* Main Headline with Typewriter Animation */}
+        {/* Main Headline with Typewriter Animation (Fixed space to prevent layout shifts) */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
@@ -208,13 +208,23 @@ export default function Hero({ theme = 'dark' }) {
           className="max-w-5xl mx-auto mb-6"
         >
           <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-[var(--text-heading)] leading-[1.08] relative">
-            <span>{text1}</span>
-            {!isLine1Done && <span className="typewriter-cursor" />}
-            <br className="hidden sm:inline" />{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--text-heading)] via-[var(--text-body)] to-[var(--text-sub)]">
-              {text2}
+            {/* Invisible placeholder reserving exact space */}
+            <span className="invisible block pointer-events-none select-none" aria-hidden="true">
+              {FULL_LINE_1}
+              <br className="hidden sm:inline" />
+              {FULL_LINE_2}
             </span>
-            {isLine1Done && <span className="typewriter-cursor" />}
+
+            {/* Absolute overlay for typewriter typing animation */}
+            <span className="absolute inset-0 block text-center">
+              <span>{text1}</span>
+              {!isLine1Done && <span className="typewriter-cursor" />}
+              <br className="hidden sm:inline" />{" "}
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--text-heading)] via-[var(--text-body)] to-[var(--text-sub)]">
+                {text2}
+              </span>
+              {isLine1Done && <span className="typewriter-cursor" />}
+            </span>
           </h1>
         </motion.div>
 
