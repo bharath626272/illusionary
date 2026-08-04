@@ -6,6 +6,27 @@ export default function Portfolio() {
   const [activeFilter, setActiveFilter] = useState('All');
   const [selectedProject, setSelectedProject] = useState(null);
 
+  const handleMouseMove = (e) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = -((y - centerY) / centerY) * 6;
+    const rotateY = ((x - centerX) / centerX) * 6;
+
+    card.style.setProperty('--mouse-x', `${x}px`);
+    card.style.setProperty('--mouse-y', `${y}px`);
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+  };
+
+  const handleMouseLeave = (e) => {
+    const card = e.currentTarget;
+    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+  };
+
   const filters = ['All', 'Website', 'Software', 'Mobile App', 'Branding', 'UI/UX', 'Digital Marketing'];
 
   const projects = [
@@ -17,7 +38,6 @@ export default function Portfolio() {
       problem: 'Paper-based patient records slowed down appointments and billing across three clinic locations.',
       solution: 'A custom hospital management system with scheduling, EMR, billing, and role-based dashboards.',
       impact: 'Admin time cut by 60% and zero missed appointments.',
-      gradient: 'from-blue-600 to-indigo-600',
       client: 'MediCare Plus',
       duration: '8 weeks'
     },
@@ -29,7 +49,6 @@ export default function Portfolio() {
       problem: 'An outdated site with no online reservations was losing bookings to competitors.',
       solution: 'A premium multi-location website with menus, table booking, and local SEO optimization.',
       impact: 'Online reservations up 3.2× in the first quarter.',
-      gradient: 'from-purple-600 to-pink-600',
       client: 'Savoria Group',
       duration: '3 weeks'
     },
@@ -41,7 +60,6 @@ export default function Portfolio() {
       problem: 'A logistics SME coordinated drivers over phone calls with no live visibility.',
       solution: 'A cross-platform driver and customer app with live tracking, routing, and proof of delivery.',
       impact: 'Deliveries per driver up 40%, support calls down 70%.',
-      gradient: 'from-cyan-500 to-blue-600',
       client: 'FieldSync Logistics',
       duration: '6 weeks'
     },
@@ -53,7 +71,6 @@ export default function Portfolio() {
       problem: 'A growing real estate firm looked indistinguishable from every local competitor.',
       solution: 'A full identity system — logo, stationery, brochures, and social templates.',
       impact: 'Brand recall doubled in post-launch client surveys.',
-      gradient: 'from-amber-500 to-emerald-600',
       client: 'Northwind Realty',
       duration: '4 weeks'
     },
@@ -65,7 +82,6 @@ export default function Portfolio() {
       problem: 'Students abandoned courses because the learning platform felt cluttered and confusing.',
       solution: 'A complete UX overhaul with a design system, simplified navigation, and progress-first dashboards.',
       impact: 'Course completion rates improved by 45%.',
-      gradient: 'from-violet-600 to-cyan-500',
       client: 'LearnHub EdTech',
       duration: '5 weeks'
     },
@@ -77,7 +93,6 @@ export default function Portfolio() {
       problem: 'A B2B manufacturer relied entirely on trade shows for lead generation.',
       solution: 'Technical SEO, targeted Google Ads, and conversion-optimized landing pages.',
       impact: 'Inbound leads up 5× with 38% lower cost per lead.',
-      gradient: 'from-emerald-500 to-teal-600',
       client: 'Vertex Mfg',
       duration: 'Ongoing'
     }
@@ -88,16 +103,31 @@ export default function Portfolio() {
     : projects.filter(p => p.category === activeFilter);
 
   return (
-    <section id="work" className="py-24 relative overflow-hidden">
+    <section id="work" className="py-20 sm:py-28 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="badge-pill mb-4">Portfolio</div>
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-heading tracking-tight mb-6">
-            Work That <span className="text-gradient">Moves the Numbers</span>
-          </h2>
-          <p className="text-lg text-sub">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="badge-resend mb-4"
+          >
+            Portfolio
+          </motion.div>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="font-display text-3xl sm:text-5xl font-extrabold text-[var(--text-heading)] tracking-tight mb-4"
+          >
+            Work That <span className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--text-heading)] via-[var(--text-body)] to-[var(--text-sub)]">Moves the Numbers</span>
+          </motion.h2>
+
+          <p className="text-[var(--text-sub)] text-base max-w-xl mx-auto font-normal">
             Real outcomes delivered for ambitious companies across software, web, mobile, and design.
           </p>
         </div>
@@ -108,10 +138,10 @@ export default function Portfolio() {
             <button
               key={filter}
               onClick={() => setActiveFilter(filter)}
-              className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-mono transition-all ${
                 activeFilter === filter
-                  ? 'bg-gradient-to-r from-indigo-600 to-cyan-500 text-white shadow-lg shadow-indigo-500/25'
-                  : 'glass-panel text-sub hover:text-heading hover:bg-white/10'
+                  ? 'bg-[var(--text-heading)] text-[var(--bg-main)] font-semibold'
+                  : 'bg-[var(--pill-bg)] border border-[var(--border-color)] text-[var(--text-sub)] hover:text-[var(--text-heading)] hover:bg-[var(--border-color)]'
               }`}
             >
               {filter}
@@ -120,141 +150,103 @@ export default function Portfolio() {
         </div>
 
         {/* Projects Cards Grid */}
-        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
           <AnimatePresence>
             {filteredProjects.map((project) => (
               <motion.div
                 key={project.id}
                 layout
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.96 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.4 }}
-                whileHover={{ y: -8 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
                 onClick={() => setSelectedProject(project)}
-                className="glass-card rounded-2xl overflow-hidden cursor-pointer flex flex-col justify-between group"
+                className="spotlight-card rounded-xl p-6 border border-[var(--border-color)] bg-[var(--bg-card)] cursor-pointer flex flex-col justify-between group transition-transform duration-200 ease-out"
+                style={{ transformStyle: 'preserve-3d' }}
               >
-                {/* Visual Banner Preview */}
-                <div className={`h-48 bg-gradient-to-tr ${project.gradient} p-6 flex flex-col justify-between relative overflow-hidden`}>
-                  <div className="flex items-center justify-between z-10">
-                    <span className="text-xs font-bold px-3 py-1 rounded-full bg-black/40 text-white backdrop-blur-md">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="px-2.5 py-1 rounded-md bg-[var(--pill-bg)] border border-[var(--border-color)] text-[var(--text-sub)] font-mono text-[11px]">
                       {project.category}
                     </span>
-                    <div className="w-8 h-8 rounded-full bg-black/30 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                    <div className="w-8 h-8 rounded-full bg-[var(--pill-bg)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-sub)] group-hover:text-[var(--text-heading)] transition-all">
                       <ArrowUpRight className="w-4 h-4" />
                     </div>
                   </div>
 
-                  <div className="z-10">
-                    <div className="flex flex-wrap gap-1.5 mb-2">
-                      {project.tech.map((t) => (
-                        <span key={t} className="text-[10px] font-semibold px-2 py-0.5 rounded bg-white/20 text-white backdrop-blur-sm">
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                    <h3 className="text-xl font-extrabold text-white leading-snug drop-shadow-md">
-                      {project.title}
-                    </h3>
-                  </div>
+                  <h3 className="text-lg font-bold text-[var(--text-heading)] mb-2 group-hover:text-[var(--text-heading)] transition-colors">
+                    {project.title}
+                  </h3>
+
+                  <p className="text-xs sm:text-sm text-[var(--text-sub)] leading-relaxed mb-6 font-normal">
+                    {project.solution}
+                  </p>
                 </div>
 
-                {/* Content Card Body */}
-                <div className="p-6 space-y-4 flex-grow flex flex-col justify-between">
-                  <div>
-                    <div className="text-xs font-semibold text-sub mb-1">Impact Metric:</div>
-                    <div className="text-sm font-bold text-emerald-500 dark:text-emerald-400 flex items-center gap-1.5">
-                      <TrendingUp className="w-4 h-4" />
-                      <span>{project.impact}</span>
-                    </div>
+                <div className="pt-4 border-t border-[var(--border-color)] flex items-center justify-between">
+                  <div className="flex flex-wrap gap-1.5">
+                    {project.tech.map((t) => (
+                      <span key={t} className="text-[11px] font-mono text-[var(--text-muted)]">
+                        #{t}
+                      </span>
+                    ))}
                   </div>
-
-                  <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-indigo-500 dark:text-indigo-400 font-semibold group-hover:text-cyan-500 transition-colors">
-                    <span>View Case Study Details</span>
-                    <ArrowUpRight className="w-3.5 h-3.5" />
-                  </div>
+                  <span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-medium">
+                    {project.impact}
+                  </span>
                 </div>
               </motion.div>
             ))}
           </AnimatePresence>
         </motion.div>
 
-        {/* Modal Case Study Details */}
+        {/* Modal */}
         <AnimatePresence>
           {selectedProject && (
-            <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md p-3 sm:p-6 flex items-center justify-center overflow-y-auto"
-            onClick={() => setSelectedProject(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              onClick={(e) => e.stopPropagation()}
-              className="glass-card max-w-2xl w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-white/20 shadow-2xl relative max-h-[88vh] overflow-y-auto my-auto"
-            >
-              {/* Header Banner */}
-              <div className={`h-36 sm:h-44 bg-gradient-to-tr ${selectedProject.gradient} p-5 sm:p-8 flex flex-col justify-between relative`}>
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="bg-[var(--bg-glass-solid)] border border-[var(--border-color)] rounded-xl p-6 sm:p-8 max-w-xl w-full relative shadow-2xl"
+              >
                 <button
                   onClick={() => setSelectedProject(null)}
-                  className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 p-2 rounded-full bg-black/50 text-white hover:bg-black transition-colors"
+                  className="absolute top-4 right-4 p-2 rounded-lg bg-[var(--pill-bg)] text-[var(--text-sub)] hover:text-[var(--text-heading)] transition-all"
                 >
-                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <X className="w-5 h-5" />
                 </button>
 
-                <span className="text-xs font-bold px-3 py-1 rounded-full bg-black/40 text-white w-fit">
-                  {selectedProject.category}
-                </span>
+                <div className="badge-resend mb-3">{selectedProject.category}</div>
+                <h3 className="text-2xl font-bold text-[var(--text-heading)] mb-4">{selectedProject.title}</h3>
 
-                <h3 className="text-xl sm:text-2xl font-extrabold text-white drop-shadow-md pr-6">
-                  {selectedProject.title}
-                </h3>
-              </div>
-
-                {/* Modal Body */}
-                <div className="p-8 space-y-6">
-                  <div className="grid grid-cols-2 gap-4 text-xs tag-pill p-4 rounded-xl">
-                    <div>
-                      <span className="text-sub block">Client:</span>
-                      <strong className="text-heading text-sm">{selectedProject.client}</strong>
-                    </div>
-                    <div>
-                      <span className="text-sub block">Duration:</span>
-                      <strong className="text-heading text-sm">{selectedProject.duration}</strong>
-                    </div>
-                  </div>
-
+                <div className="space-y-4 mb-6 text-sm text-[var(--text-sub)]">
                   <div>
-                    <h4 className="text-sm font-bold text-rose-500 uppercase tracking-wider mb-1">The Problem</h4>
-                    <p className="text-sm text-sub leading-relaxed">{selectedProject.problem}</p>
+                    <h4 className="font-mono text-xs text-[var(--text-muted)] uppercase mb-1">Problem</h4>
+                    <p>{selectedProject.problem}</p>
                   </div>
-
                   <div>
-                    <h4 className="text-sm font-bold text-indigo-500 uppercase tracking-wider mb-1">Our Solution</h4>
-                    <p className="text-sm text-sub leading-relaxed">{selectedProject.solution}</p>
+                    <h4 className="font-mono text-xs text-[var(--text-muted)] uppercase mb-1">Solution</h4>
+                    <p>{selectedProject.solution}</p>
                   </div>
-
-                  <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                    <h4 className="text-sm font-bold text-emerald-400 uppercase tracking-wider mb-1">Verified Impact</h4>
-                    <p className="text-sm text-emerald-200 font-semibold">{selectedProject.impact}</p>
-                  </div>
-
-                  <div className="flex justify-end pt-2">
-                    <button
-                      onClick={() => setSelectedProject(null)}
-                      className="btn-primary text-xs py-2.5 px-6"
-                    >
-                      Close Overview
-                    </button>
+                  <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-mono text-xs">
+                    Impact: {selectedProject.impact}
                   </div>
                 </div>
+
+                <button
+                  onClick={() => setSelectedProject(null)}
+                  className="btn-resend-white w-full text-xs"
+                >
+                  Close Case Study
+                </button>
               </motion.div>
-            </motion.div>
+            </div>
           )}
         </AnimatePresence>
+
       </div>
     </section>
   );

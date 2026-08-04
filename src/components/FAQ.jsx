@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, HelpCircle } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(0);
@@ -41,22 +41,37 @@ export default function FAQ() {
   ];
 
   return (
-    <section id="faq" className="py-24 relative overflow-hidden">
+    <section id="faq" className="py-20 sm:py-28 relative overflow-hidden">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="badge-pill mb-4">FAQ</div>
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-heading tracking-tight mb-6">
-            Questions, <span className="text-gradient">Answered</span>
-          </h2>
-          <p className="text-lg text-sub">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="badge-resend mb-4"
+          >
+            FAQ
+          </motion.div>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="font-display text-3xl sm:text-5xl font-extrabold text-[var(--text-heading)] tracking-tight mb-4"
+          >
+            Questions, <span className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--text-heading)] via-[var(--text-body)] to-[var(--text-sub)]">Answered</span>
+          </motion.h2>
+
+          <p className="text-[var(--text-sub)] text-base max-w-xl mx-auto font-normal">
             Got questions before getting started? Here are answers to what clients ask us most.
           </p>
         </div>
 
-        {/* Accordions */}
-        <div className="space-y-4">
+        {/* All 8 Accordions */}
+        <div className="space-y-3">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
             return (
@@ -65,20 +80,17 @@ export default function FAQ() {
                 initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.04 }}
-                className="glass-card rounded-2xl overflow-hidden"
+                transition={{ delay: index * 0.03 }}
+                className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl overflow-hidden shadow-sm"
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : index)}
-                  className="w-full px-6 py-5 text-left flex items-center justify-between gap-4 font-bold text-base text-heading hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                  className="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-semibold text-sm sm:text-base text-[var(--text-heading)] hover:text-[var(--text-heading)] transition-colors"
                 >
-                  <span className="flex items-center gap-3">
-                    <HelpCircle className="w-5 h-5 text-indigo-500 dark:text-indigo-400 shrink-0" />
-                    <span>{faq.q}</span>
-                  </span>
+                  <span>{faq.q}</span>
                   <ChevronDown
-                    className={`w-5 h-5 text-sub transition-transform duration-300 shrink-0 ${
-                      isOpen ? 'rotate-180 text-indigo-500 dark:text-cyan-400' : ''
+                    className={`w-4 h-4 text-[var(--text-sub)] transition-transform duration-200 shrink-0 ${
+                      isOpen ? 'rotate-180 text-[var(--text-heading)]' : ''
                     }`}
                   />
                 </button>
@@ -89,9 +101,9 @@ export default function FAQ() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                     >
-                      <div className="px-6 pb-6 pt-2 text-sm text-sub leading-relaxed border-t border-white/5">
+                      <div className="px-6 pb-5 pt-1 text-xs sm:text-sm text-[var(--text-sub)] leading-relaxed border-t border-[var(--border-color)] font-normal">
                         {faq.a}
                       </div>
                     </motion.div>

@@ -1,147 +1,168 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useRef } from 'react';
+import * as THREE from 'three';
 
 export default function AnimatedBackground({ theme }) {
-  // Dust particles array
-  const particles = Array.from({ length: 18 }, (_, i) => ({
-    id: i,
-    size: Math.random() * 4 + 2,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    duration: Math.random() * 14 + 10,
-    delay: Math.random() * 4,
-  }));
+  const containerRef = useRef(null);
 
-  const isDark = theme === 'dark';
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    // 3D Scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(
+      60,
+      window.innerWidth / window.innerHeight,
+      1,
+      1000
+    );
+    camera.position.z = 400;
+
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    container.appendChild(renderer.domElement);
+
+    // Create 3D Particle Grid Wave
+    const numX = 50;
+    const numY = 30;
+    const numParticles = numX * numY;
+    const positions = new Float32Array(numParticles * 3);
+    const scales = new Float32Array(numParticles);
+
+    let i = 0, j = 0;
+    for (let ix = 0; ix < numX; ix++) {
+      for (let iy = 0; iy < numY; iy++) {
+        positions[i] = ix * 24 - (numX * 24) / 2; // x
+        positions[i + 1] = 0; // y
+        positions[i + 2] = iy * 24 - (numY * 24) / 2; // z
+        scales[j] = 1;
+        i += 3;
+        j++;
+      }
+    }
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('scale', new THREE.BufferAttribute(scales, 1));
+
+    // Particle Shader Material
+    const material = new THREE.ShaderMaterial({
+      uniforms: {
+        color: { value: new THREE.Color(theme === 'light' ? 0x2563eb : 0xff4f00) },
+      },
+      vertexShader: `
+        attribute float scale;
+        void main() {
+          vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+          gl_PointSize = scale * ( 200.0 / - mvPosition.z );
+          gl_Position = projectionMatrix * mvPosition;
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 color;
+        void main() {
+          if ( length( gl_PointCoord - vec2( 0.5, 0.5 ) ) > 0.47 ) discard;
+          gl_FragColor = vec4( color, 0.4 );
+        }
+      `,
+      transparent: true,
+      depthWrite: false,
+    });
+
+    const particles = new THREE.Points(geometry, material);
+    scene.add(particles);
+
+    // Mouse Interaction Variables
+    let mouseX = 0;
+    let mouseY = 0;
+    let targetX = 0;
+    let targetY = 0;
+
+    const handleMouseMove = (e) => {
+      mouseX = (e.clientX - window.innerWidth / 2) * 0.3;
+      mouseY = (e.clientY - window.innerHeight / 2) * 0.3;
+    };
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+
+    const handleResize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+
+    window.addEventListener('resize', handleResize, { passive: true });
+
+    // Animation Loop
+    let count = 0;
+    let animationFrameId;
+
+    const animate = () => {
+      animationFrameId = requestAnimationFrame(animate);
+
+      count += 0.04;
+
+      targetX += (mouseX - targetX) * 0.05;
+      targetY += (mouseY - targetY) * 0.05;
+
+      camera.position.x += (targetX - camera.position.x) * 0.05;
+      camera.position.y += (-targetY + 150 - camera.position.y) * 0.05;
+      camera.lookAt(scene.position);
+
+      const positionsArr = particles.geometry.attributes.position.array;
+      const scalesArr = particles.geometry.attributes.scale.array;
+
+      let i = 0, j = 0;
+      for (let ix = 0; ix < numX; ix++) {
+        for (let iy = 0; iy < numY; iy++) {
+          positionsArr[i + 1] =
+            Math.sin((ix + count) * 0.3) * 35 +
+            Math.sin((iy + count) * 0.5) * 35;
+          scalesArr[j] =
+            (Math.sin((ix + count) * 0.3) + 1) * 2.5 +
+            (Math.sin((iy + count) * 0.5) + 1) * 2.5;
+          i += 3;
+          j++;
+        }
+      }
+
+      particles.geometry.attributes.position.needsUpdate = true;
+      particles.geometry.attributes.scale.needsUpdate = true;
+
+      renderer.render(scene, camera);
+    };
+
+    animate();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('resize', handleResize);
+      if (container && renderer.domElement) {
+        container.removeChild(renderer.domElement);
+      }
+      geometry.dispose();
+      material.dispose();
+      renderer.dispose();
+    };
+  }, [theme]);
 
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden transition-colors duration-500">
-      
-      {/* Light Mode Mesh Background Base Gradient */}
-      {!isDark && (
-        <div 
-          className="absolute inset-0 transition-opacity duration-700 opacity-100"
-          style={{
-            background: 'linear-gradient(135deg, #eef2ff 0%, #f5f3ff 25%, #f0fdfa 60%, #fdf2f8 85%, #f8fafc 100%)'
-          }}
-        />
-      )}
+      {/* Resend Subtle Dotted Grid Overlay */}
+      <div className="absolute inset-0 bg-resend-grid opacity-70 z-[1]" />
 
-      {/* Floating Orb 1: Top Left - Indigo / Sapphire (Identical Size & Glow on All Devices) */}
-      <motion.div
-        animate={{
-          x: [0, 70, -50, 0],
-          y: [0, -60, 45, 0],
-          scale: [1, 1.15, 0.95, 1],
-          rotate: [0, 120, 240, 360],
-        }}
-        transition={{
-          duration: 22,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-        className="absolute -top-[12%] left-[5%] w-[600px] h-[600px] rounded-full blur-[40px] md:blur-[85px] gpu-layer"
+      {/* Resend Signature Top Spotlight Beam */}
+      <div 
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] pointer-events-none z-[1]"
         style={{
-          background: isDark
-            ? 'radial-gradient(circle, rgba(110, 139, 255, 0.22) 0%, rgba(62, 214, 245, 0.05) 60%, transparent 80%)'
-            : 'radial-gradient(circle, rgba(99, 102, 241, 0.28) 0%, rgba(59, 130, 246, 0.12) 50%, transparent 80%)',
-          willChange: 'transform',
+          background: 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(255, 79, 0, 0.16) 0%, rgba(255, 255, 255, 0.05) 45%, transparent 70%)',
         }}
       />
 
-      {/* Floating Orb 2: Middle Right - Cyan / Teal (Identical Size & Glow on All Devices) */}
-      <motion.div
-        animate={{
-          x: [0, -80, 60, 0],
-          y: [0, 70, -55, 0],
-          scale: [1, 1.2, 0.95, 1],
-        }}
-        transition={{
-          duration: 26,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-        className="absolute top-[28%] -right-[10%] w-[650px] h-[650px] rounded-full blur-[40px] md:blur-[85px] gpu-layer"
-        style={{
-          background: isDark
-            ? 'radial-gradient(circle, rgba(62, 214, 245, 0.18) 0%, rgba(168, 85, 247, 0.08) 65%, transparent 85%)'
-            : 'radial-gradient(circle, rgba(20, 184, 166, 0.24) 0%, rgba(6, 182, 212, 0.15) 60%, transparent 80%)',
-          willChange: 'transform',
-        }}
-      />
-
-      {/* Floating Orb 3: Bottom Left - Violet / Rose (Identical Size & Glow on All Devices) */}
-      <motion.div
-        animate={{
-          x: [0, 90, -45, 0],
-          y: [0, -70, 60, 0],
-          scale: [0.95, 1.18, 1, 0.95],
-        }}
-        transition={{
-          duration: 24,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-        className="absolute bottom-[5%] -left-[10%] w-[550px] h-[550px] rounded-full blur-[40px] md:blur-[85px] gpu-layer"
-        style={{
-          background: isDark
-            ? 'radial-gradient(circle, rgba(168, 85, 247, 0.16) 0%, rgba(110, 139, 255, 0.06) 60%, transparent 80%)'
-            : 'radial-gradient(circle, rgba(217, 70, 239, 0.22) 0%, rgba(244, 63, 94, 0.12) 60%, transparent 80%)',
-          willChange: 'transform',
-        }}
-      />
-
-      {/* Floating Orb 4: Center Sapphire Pulse Glow */}
-      <motion.div
-        animate={{
-          scale: [0.9, 1.15, 0.9],
-          opacity: [0.4, 0.65, 0.4],
-        }}
-        transition={{
-          duration: 16,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-        className="absolute top-[55%] right-[20%] w-[480px] h-[480px] rounded-full blur-[40px] md:blur-[85px] gpu-layer"
-        style={{
-          background: isDark
-            ? 'radial-gradient(circle, rgba(110, 139, 255, 0.14) 0%, transparent 70%)'
-            : 'radial-gradient(circle, rgba(59, 130, 246, 0.18) 0%, rgba(147, 51, 234, 0.1) 65%, transparent 80%)',
-          willChange: 'transform, opacity',
-        }}
-      />
-
-      {/* Floating Light Dust Particles */}
-      {particles.map((p) => (
-        <motion.div
-          key={p.id}
-          initial={{
-            x: `${p.x}vw`,
-            y: `${p.y}vh`,
-            opacity: 0,
-          }}
-          animate={{
-            y: [`${p.y}vh`, `${(p.y - 30 + 100) % 100}vh`],
-            opacity: isDark ? [0, 0.6, 0] : [0, 0.7, 0],
-          }}
-          transition={{
-            duration: p.duration,
-            repeat: Infinity,
-            delay: p.delay,
-            ease: 'linear',
-          }}
-          className="absolute rounded-full gpu-layer"
-          style={{
-            width: p.size,
-            height: p.size,
-            backgroundColor: isDark ? 'rgba(110, 139, 255, 0.5)' : 'rgba(79, 70, 229, 0.5)',
-            boxShadow: isDark 
-              ? '0 0 8px rgba(62, 214, 245, 0.7)' 
-              : '0 0 8px rgba(79, 70, 229, 0.4)',
-            willChange: 'transform, opacity',
-          }}
-        />
-      ))}
+      {/* Three.js 3D Canvas Container */}
+      <div ref={containerRef} className="absolute inset-0 z-0 opacity-80" />
     </div>
   );
 }

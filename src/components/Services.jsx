@@ -6,6 +6,27 @@ import {
 } from 'lucide-react';
 
 export default function Services() {
+  const handleMouseMove = (e) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = -((y - centerY) / centerY) * 7;
+    const rotateY = ((x - centerX) / centerX) * 7;
+
+    card.style.setProperty('--mouse-x', `${x}px`);
+    card.style.setProperty('--mouse-y', `${y}px`);
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+  };
+
+  const handleMouseLeave = (e) => {
+    const card = e.currentTarget;
+    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+  };
+
   const services = [
     {
       id: 'custom-code-dev',
@@ -13,7 +34,6 @@ export default function Services() {
       description: 'Hand-crafted, highly optimized custom websites and web apps built from scratch with modern code.',
       tags: ['React', 'Next.js', 'Vue', 'TypeScript', 'TailwindCSS', 'Node.js', 'Custom API'],
       icon: Code,
-      color: 'from-cyan-500/20 to-blue-500/20'
     },
     {
       id: 'nocode-dev',
@@ -21,15 +41,13 @@ export default function Services() {
       description: 'Fast-launch websites and visual platforms built on the best modern no-code builders.',
       tags: ['Framer', 'Webflow', 'WordPress', 'Wix Studio', 'Bubble', 'Shopify'],
       icon: Zap,
-      color: 'from-amber-500/20 to-orange-500/20'
     },
     {
       id: 'fullstack-dev',
       title: 'Custom Full-Stack Enterprise Systems',
       description: 'Scalable backend architectures, SaaS products, dashboards, and custom software systems.',
-      tags: ['CRM', 'ERP', 'HRMS', 'SaaS', 'Dashboards', 'REST & GraphQL APIs', 'Database'],
+      tags: ['CRM', 'ERP', 'HRMS', 'SaaS', 'Dashboards', 'REST & GraphQL APIs'],
       icon: Globe,
-      color: 'from-blue-500/20 to-indigo-500/20'
     },
     {
       id: 'mobile-app',
@@ -37,7 +55,6 @@ export default function Services() {
       description: 'Native and cross-platform apps for customers, teams, and operations.',
       tags: ['Android', 'iOS', 'Cross Platform', 'PWA', 'Delivery', 'Booking', 'Healthcare'],
       icon: Smartphone,
-      color: 'from-purple-500/20 to-pink-500/20'
     },
     {
       id: 'ui-ux',
@@ -45,7 +62,6 @@ export default function Services() {
       description: 'Interfaces that feel effortless — researched, prototyped, and systemized.',
       tags: ['App Design', 'Web Design', 'Dashboards', 'Wireframes', 'Prototypes', 'Design Systems'],
       icon: Layout,
-      color: 'from-pink-500/20 to-rose-500/20'
     },
     {
       id: 'branding',
@@ -53,7 +69,6 @@ export default function Services() {
       description: 'Identities and creative assets that make your business unforgettable.',
       tags: ['Logos', 'Brand Identity', 'Brochures', 'Packaging', 'Pitch Decks', 'Social Creatives'],
       icon: Palette,
-      color: 'from-violet-500/20 to-purple-500/20'
     },
     {
       id: 'digital-marketing',
@@ -61,7 +76,6 @@ export default function Services() {
       description: 'Data-driven growth across search, social, and paid channels.',
       tags: ['SEO', 'Local SEO', 'Google Ads', 'Meta Ads', 'Content', 'Email', 'Analytics'],
       icon: TrendingUp,
-      color: 'from-emerald-500/20 to-teal-500/20'
     },
     {
       id: 'cloud-infra',
@@ -69,7 +83,6 @@ export default function Services() {
       description: 'Reliable hosting, security, and performance for total peace of mind.',
       tags: ['Hosting', 'Cloudflare', 'SSL', 'Migration', 'Backups', 'Security', 'Optimization'],
       icon: Cloud,
-      color: 'from-sky-500/20 to-indigo-500/20'
     },
     {
       id: 'api-integrations',
@@ -77,7 +90,6 @@ export default function Services() {
       description: 'Connect your stack — payments, CRMs, analytics, and beyond.',
       tags: ['Razorpay', 'Stripe', 'PayPal', 'HubSpot', 'Zoho', 'Salesforce', 'REST APIs'],
       icon: Layers,
-      color: 'from-teal-500/20 to-cyan-500/20'
     },
     {
       id: 'ecommerce',
@@ -85,21 +97,20 @@ export default function Services() {
       description: 'Stores and marketplaces built to sell, ship, and scale.',
       tags: ['Shopify', 'WooCommerce', 'Magento', 'B2B Portals', 'Marketplaces', 'Shipping'],
       icon: ShoppingBag,
-      color: 'from-amber-500/20 to-yellow-500/20'
     }
   ];
 
   return (
-    <section id="services" className="py-16 sm:py-24 relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 relative z-10">
+    <section id="services" className="py-20 sm:py-28 relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-16">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="badge-pill mb-3 sm:mb-4"
+            className="badge-resend mb-4"
           >
             Services
           </motion.div>
@@ -109,55 +120,63 @@ export default function Services() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-2xl sm:text-5xl font-extrabold text-heading tracking-tight mb-4 sm:mb-6"
+            className="font-display text-3xl sm:text-5xl font-extrabold text-[var(--text-heading)] tracking-tight mb-4"
           >
             Everything Your Business <br className="hidden sm:inline" />
-            <span className="text-gradient">Needs to Win Online</span>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--text-heading)] via-[var(--text-body)] to-[var(--text-sub)]">
+              Needs to Win Online
+            </span>
           </motion.h2>
+
+          <p className="text-[var(--text-sub)] text-base max-w-xl mx-auto font-normal">
+            Comprehensive digital services tailored for businesses, startups, and growing enterprises.
+          </p>
         </div>
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
+        {/* 10 Services Spotlight Cards - Theme Adaptive */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {services.map((service, index) => {
             const Icon = service.icon;
             return (
               <motion.div
                 key={service.id}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 25 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.05 }}
-                whileHover={{ y: -6 }}
-                className="glass-card rounded-2xl p-5 sm:p-8 flex flex-col justify-between relative group overflow-hidden"
+                transition={{ duration: 0.5, delay: index * 0.05, ease: [0.16, 1, 0.3, 1] }}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+                className="spotlight-card rounded-xl p-6 sm:p-7 flex flex-col justify-between group border border-[var(--border-color)] bg-[var(--bg-card)] transition-transform duration-200 ease-out"
+                style={{ transformStyle: 'preserve-3d' }}
               >
-                {/* Glow accent in top corner */}
-                <div className={`absolute -top-12 -right-12 w-36 h-36 bg-gradient-to-br ${service.color} rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500 pointer-events-none`} />
-
                 <div>
-                  <div className="flex items-center justify-between mb-4 sm:mb-6">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl tag-pill flex items-center justify-center text-indigo-500 dark:text-indigo-400 group-hover:text-cyan-500 transition-colors">
-                      <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="w-10 h-10 rounded-lg bg-[var(--pill-bg)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-heading)] group-hover:border-[var(--border-hover)] transition-all">
+                      <Icon className="w-5 h-5 text-[var(--text-heading)]" />
                     </div>
-                    <a href="#contact" className="w-8 h-8 rounded-full tag-pill flex items-center justify-center text-sub group-hover:text-white group-hover:bg-indigo-600 transition-colors">
+                    <a 
+                      href="#contact" 
+                      className="w-8 h-8 rounded-full bg-[var(--pill-bg)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-sub)] group-hover:text-[var(--text-heading)] group-hover:border-[var(--border-hover)] transition-all"
+                    >
                       <ArrowUpRight className="w-4 h-4" />
                     </a>
                   </div>
 
-                  <h3 className="text-lg sm:text-xl font-bold text-heading mb-2 sm:mb-3 group-hover:text-gradient transition-colors">
+                  <h3 className="text-lg font-bold text-[var(--text-heading)] mb-2 group-hover:text-[var(--text-heading)] transition-colors">
                     {service.title}
                   </h3>
 
-                  <p className="text-xs sm:text-sm text-sub leading-relaxed mb-4 sm:mb-6">
+                  <p className="text-xs sm:text-sm text-[var(--text-sub)] leading-relaxed mb-6 font-normal">
                     {service.description}
                   </p>
                 </div>
 
-                <div className="pt-3 sm:pt-4 border-t border-white/10">
-                  <div className="flex flex-wrap gap-1 sm:gap-1.5">
+                <div className="pt-4 border-t border-[var(--border-color)]">
+                  <div className="flex flex-wrap gap-1.5">
                     {service.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="tag-pill"
+                        className="px-2 py-0.5 rounded-md bg-[var(--pill-bg)] border border-[var(--border-color)] text-[var(--text-sub)] font-mono text-[11px]"
                       >
                         {tag}
                       </span>
@@ -168,6 +187,7 @@ export default function Services() {
             );
           })}
         </div>
+
       </div>
     </section>
   );

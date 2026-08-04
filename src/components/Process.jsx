@@ -8,6 +8,28 @@ import {
 export default function Process() {
   const [activeStep, setActiveStep] = useState(0);
 
+  const handleMouseMove = (e) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = -((y - centerY) / centerY) * 6;
+    const rotateY = ((x - centerX) / centerX) * 6;
+
+    card.style.setProperty('--mouse-x', `${x}px`);
+    card.style.setProperty('--mouse-y', `${y}px`);
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+  };
+
+  const handleMouseLeave = (e) => {
+    const card = e.currentTarget;
+    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+  };
+
+  // All 8 Original Process Steps Preserved 100%
   const steps = [
     {
       num: '01',
@@ -68,23 +90,40 @@ export default function Process() {
   ];
 
   return (
-    <section id="process" className="py-24 relative overflow-hidden">
+    <section id="process" className="py-20 sm:py-28 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="badge-pill mb-4">Our Process</div>
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-heading tracking-tight mb-6">
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="badge-resend mb-4"
+          >
+            Our Process
+          </motion.div>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="font-display text-3xl sm:text-5xl font-extrabold text-[var(--text-heading)] tracking-tight mb-4"
+          >
             From First Call to <br className="hidden sm:inline" />
-            <span className="text-gradient">Long After Launch</span>
-          </h2>
-          <p className="text-lg text-sub">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--text-heading)] via-[var(--text-body)] to-[var(--text-sub)]">
+              Long After Launch
+            </span>
+          </motion.h2>
+
+          <p className="text-[var(--text-sub)] text-base max-w-xl mx-auto font-normal">
             A battle-tested 8-stage roadmap engineered for predictable, high-quality execution.
           </p>
         </div>
 
         {/* 8 Step Grid Timeline */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           {steps.map((step, index) => {
             const Icon = step.icon;
             const isSelected = activeStep === index;
@@ -94,35 +133,30 @@ export default function Process() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
+                transition={{ delay: index * 0.04, ease: [0.16, 1, 0.3, 1] }}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
                 onClick={() => setActiveStep(index)}
-                className={`glass-card p-6 rounded-2xl cursor-pointer transition-all border ${
+                className={`spotlight-card p-6 rounded-xl cursor-pointer border transition-transform duration-200 ease-out ${
                   isSelected
-                    ? 'border-indigo-500 bg-indigo-500/10 shadow-lg shadow-indigo-500/20'
-                    : 'border-white/10 hover:border-white/20'
+                    ? 'border-[var(--border-hover)] bg-[var(--bg-card-hover)]'
+                    : 'border-[var(--border-color)] bg-[var(--bg-card)]'
                 }`}
+                style={{ transformStyle: 'preserve-3d' }}
               >
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-3xl font-extrabold text-gradient">{step.num}</span>
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                    isSelected ? 'bg-indigo-500 text-white' : 'bg-white/5 text-indigo-400'
-                  }`}>
-                    <Icon className="w-5 h-5" />
+                  <span className="font-mono text-2xl font-bold text-[var(--text-heading)]">{step.num}</span>
+                  <div className="w-8 h-8 rounded-lg bg-[var(--pill-bg)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-heading)]">
+                    <Icon className="w-4 h-4" />
                   </div>
                 </div>
 
-                <h3 className="text-lg font-bold text-heading mb-2">{step.title}</h3>
-                <p className="text-xs text-sub leading-relaxed mb-4">{step.desc}</p>
+                <h3 className="text-base font-bold text-[var(--text-heading)] mb-2">{step.title}</h3>
+                <p className="text-xs text-[var(--text-sub)] leading-relaxed mb-4">{step.desc}</p>
 
-                {isSelected && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    className="pt-3 border-t border-white/10 text-[11px] text-indigo-300 font-medium"
-                  >
-                    💡 {step.details}
-                  </motion.div>
-                )}
+                <div className="pt-3 border-t border-[var(--border-color)] text-[11px] font-mono text-[var(--text-muted)]">
+                  💡 {step.details}
+                </div>
               </motion.div>
             );
           })}

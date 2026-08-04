@@ -1,336 +1,154 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles, FolderKanban, Users, Award, Building2, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  ArrowRight, Check, Copy, Terminal, Code2, Sparkles, Play, RotateCcw,
+  FolderKanban, Users, Building2, Award, ChevronRight 
+} from 'lucide-react';
 
-const VERTEX_SHADER_SOURCE = `
-  attribute vec2 a_position;
-  void main() {
-    gl_Position = vec4(a_position, 0.0, 1.0);
-  }
-`;
+const INITIAL_CODE_EXAMPLES = {
+  react: `import { Nexora } from 'nexora-sdk';
 
-const FRAGMENT_SHADER_SOURCE = `
-  precision highp float;
-  uniform vec2 u_resolution;
-  uniform float u_time;
-  uniform vec2 u_mouse;
-  uniform float u_is_light;
+const nexora = new Nexora({ 
+  apiKey: process.env.NEXORA_API_KEY 
+});
 
-  vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-  vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-  vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+export async function createProject() {
+  const project = await nexora.projects.deploy({
+    name: 'enterprise-platform',
+    stack: ['react', 'node', 'ai-engine'],
+    autoScale: true,
+  });
 
-  float snoise(vec2 v) {
-    const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
-    vec2 i  = floor(v + dot(v, C.yy) );
-    vec2 x0 = v -   i + dot(i, C.xx);
-    vec2 i1;
-    i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-    vec4 x12 = x0.xyxy + C.xxzz;
-    x12.xy -= i1;
-    i = mod289(i);
-    vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 )) + i.x + vec3(0.0, i1.x, 1.0 ));
-    vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
-    m = m*m;
-    m = m*m;
-    vec3 x = 2.0 * fract(p * C.www) - 1.0;
-    vec3 h = abs(x) - 0.5;
-    vec3 ox = floor(x + 0.5);
-    vec3 a0 = x - ox;
-    m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
-    vec3 g;
-    g.x  = a0.x  * x0.x  + h.x  * x0.y;
-    g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-    return 130.0 * dot(m, g);
-  }
+  return project.url;
+}`,
+  node: `const { NexoraClient } = require('@nexora/api');
+const nexora = new NexoraClient({ token: process.env.API_TOKEN });
 
-  void main() {
-    vec2 st = (gl_FragCoord.xy - 0.5 * u_resolution.xy) / min(u_resolution.x, u_resolution.y);
-    vec2 mouse = (u_mouse - 0.5 * u_resolution.xy) / min(u_resolution.x, u_resolution.y);
-    
-    st += mouse * 0.12;
+async function init() {
+  const result = await nexora.services.provision({
+    region: 'us-east-1',
+    highAvailability: true,
+  });
+  console.log('Provisioned:', result.id);
+}`,
+  python: `from nexora import NexoraClient
 
-    vec2 q = vec2(0.0);
-    q.x = snoise(st * 2.2 + vec2(0.0, u_time * 0.22));
-    q.y = snoise(st * 2.2 + vec2(1.0, u_time * 0.22));
+client = NexoraClient(api_key="nex_live_9482710482910")
 
-    vec2 r = vec2(0.0);
-    r.x = snoise(st * 3.0 + 1.2 * q + vec2(1.7, 9.2) + 0.15 * u_time);
-    r.y = snoise(st * 3.0 + 1.2 * q + vec2(8.3, 2.8) + 0.12 * u_time);
+response = client.deployments.create(
+    name="ai-analytics-hub",
+    performance_tier="ultra",
+    ssl_enabled=True
+)
 
-    float f = snoise(st * 2.4 + r * 1.8);
-
-    float fold = sin(f * 6.28318 + u_time * 0.4);
-    float highlight = pow(clamp(1.0 - abs(fold), 0.0, 1.0), 3.5);
-
-    // Dark Mode Shader Palette
-    vec3 darkMidnight = vec3(0.02, 0.04, 0.14);
-    vec3 darkCobalt   = vec3(0.0, 0.38, 0.95);
-    vec3 darkCyan     = vec3(0.0, 0.92, 1.0);
-    vec3 darkWhite    = vec3(0.7, 0.95, 1.0);
-
-    vec3 colorDark = mix(darkMidnight, darkCobalt, clamp(f * f * 4.0, 0.0, 1.0));
-    colorDark = mix(colorDark, darkCyan, clamp(length(q), 0.0, 1.0) * 0.85);
-    colorDark = mix(colorDark, darkWhite, highlight * 0.75);
-
-    // Light Mode Shader Palette
-    vec3 lightBase      = vec3(0.95, 0.97, 1.0);
-    vec3 lightIndigo    = vec3(0.39, 0.40, 0.95);
-    vec3 lightCyan      = vec3(0.0, 0.75, 0.92);
-    vec3 lightHighlight = vec3(1.0, 1.0, 1.0);
-
-    vec3 colorLight = mix(lightBase, lightIndigo, clamp(f * f * 3.0, 0.0, 0.7));
-    colorLight = mix(colorLight, lightCyan, clamp(length(q), 0.0, 1.0) * 0.5);
-    colorLight = mix(colorLight, lightHighlight, highlight * 0.85);
-
-    vec3 finalColor = mix(colorDark, colorLight, u_is_light);
-
-    vec2 uv = gl_FragCoord.xy / u_resolution.xy;
-    float vig = uv.x * uv.y * (1.0 - uv.x) * (1.0 - uv.y);
-    vig = clamp(pow(16.0 * vig, 0.2), 0.0, 1.0);
-
-    gl_FragColor = vec4(finalColor * vig, 1.0);
-  }
-`;
+print(f"Deployment live at: {response.endpoint}")`,
+  curl: `curl -X POST https://api.nexora.digital/v1/deploy \\
+  -H "Authorization: Bearer nex_live_secret" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "name": "illusionary-web",
+    "environment": "production"
+  }'`
+};
 
 export default function Hero({ theme = 'dark' }) {
-  const canvasRef = useRef(null);
-  const containerRef = useRef(null);
-  const isLight = theme === 'light';
+  const [activeTab, setActiveTab] = useState('react');
+  const [codeExamples, setCodeExamples] = useState(INITIAL_CODE_EXAMPLES);
+  const [copied, setCopied] = useState(false);
+  const [isRunning, setIsRunning] = useState(false);
+  const [executionOutput, setExecutionOutput] = useState(null);
+
+  const currentCode = codeExamples[activeTab];
+
+  const handleCodeChange = (e) => {
+    const val = e.target.value;
+    setCodeExamples(prev => ({
+      ...prev,
+      [activeTab]: val
+    }));
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(currentCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleRun = () => {
+    setIsRunning(true);
+    setExecutionOutput(null);
+
+    setTimeout(() => {
+      setIsRunning(false);
+      setExecutionOutput({
+        status: '200 OK',
+        latency: `${Math.floor(Math.random() * 8 + 10)}ms`,
+        payload: {
+          success: true,
+          deploymentId: `dep_${Math.random().toString(36).substring(2, 9)}`,
+          environment: 'production',
+          edgeRegion: 'us-east-1 (Global PoP)',
+          endpoint: 'https://enterprise-platform.nexora.app'
+        }
+      });
+    }, 600);
+  };
+
+  const handleReset = () => {
+    setCodeExamples(prev => ({
+      ...prev,
+      [activeTab]: INITIAL_CODE_EXAMPLES[activeTab]
+    }));
+    setExecutionOutput(null);
+  };
+
+  const handleMouseMove = (e) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+    card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+  };
 
   const stats = [
-    { number: '15+', label: 'Projects Delivered', icon: FolderKanban, color: isLight ? 'text-indigo-600' : 'text-indigo-400' },
-    { number: '20+', label: 'Happy Clients', icon: Users, color: isLight ? 'text-cyan-600' : 'text-cyan-400' },
-    { number: '10+', label: 'Industries Served', icon: Building2, color: isLight ? 'text-blue-600' : 'text-blue-400' },
-    { number: '99%', label: 'Client Satisfaction', icon: Award, color: isLight ? 'text-emerald-600' : 'text-emerald-400' },
+    { number: '15+', label: 'Projects Delivered', icon: FolderKanban },
+    { number: '20+', label: 'Happy Clients', icon: Users },
+    { number: '10+', label: 'Industries Served', icon: Building2 },
+    { number: '99%', label: 'Client Satisfaction', icon: Award },
   ];
 
-  // Container Stagger Variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.12,
-        delayChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30, scale: 0.95 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: { type: 'spring', stiffness: 100, damping: 15 },
-    },
-  };
-
-  // High Performance WebGL Setup with Render Pausing & Pixel Ratio Cap
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const gl = canvas.getContext('webgl', { powerPreference: 'high-performance', alpha: false }) || 
-               canvas.getContext('experimental-webgl');
-    if (!gl) return;
-
-    const createShader = (gl, type, source) => {
-      const shader = gl.createShader(type);
-      gl.shaderSource(shader, source);
-      gl.compileShader(shader);
-      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        gl.deleteShader(shader);
-        return null;
-      }
-      return shader;
-    };
-
-    const vertShader = createShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-    const fragShader = createShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
-    if (!vertShader || !fragShader) return;
-
-    const program = gl.createProgram();
-    gl.attachShader(program, vertShader);
-    gl.attachShader(program, fragShader);
-    gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return;
-    gl.useProgram(program);
-
-    const positionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
-      new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]),
-      gl.STATIC_DRAW
-    );
-
-    const positionLocation = gl.getAttribLocation(program, 'a_position');
-    gl.enableVertexAttribArray(positionLocation);
-    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-
-    const resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
-    const timeLocation = gl.getUniformLocation(program, 'u_time');
-    const mouseLocation = gl.getUniformLocation(program, 'u_mouse');
-    const isLightLocation = gl.getUniformLocation(program, 'u_is_light');
-
-    let mouseX = window.innerWidth / 2;
-    let mouseY = window.innerHeight / 2;
-    let targetMouseX = mouseX;
-    let targetMouseY = mouseY;
-    let currentIsLight = isLight ? 1.0 : 0.0;
-    let isVisible = true;
-
-    const handleMouseMove = (e) => {
-      if (!isVisible) return;
-      const rect = canvas.getBoundingClientRect();
-      targetMouseX = (e.clientX - rect.left) * dpr;
-      targetMouseY = (canvas.height) - (e.clientY - rect.top) * dpr;
-    };
-
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-
-    // Cap DPR for mobile at 1.0 and desktop at 1.5 for maximum fill rate performance
-    const dpr = window.innerWidth < 768 ? 1.0 : Math.min(window.devicePixelRatio || 1, 1.5);
-
-    const resizeCanvas = () => {
-      if (containerRef.current) {
-        const width = Math.floor(containerRef.current.clientWidth * dpr);
-        const height = Math.floor(containerRef.current.clientHeight * dpr);
-        if (canvas.width !== width || canvas.height !== height) {
-          canvas.width = width;
-          canvas.height = height;
-          gl.viewport(0, 0, width, height);
-        }
-      }
-    };
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas, { passive: true });
-
-    // IntersectionObserver to pause rendering when off-screen
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        isVisible = entry.isIntersecting && !document.hidden;
-      },
-      { threshold: 0.05 }
-    );
-    if (containerRef.current) observer.observe(containerRef.current);
-
-    const handleVisibilityChange = () => {
-      isVisible = !document.hidden;
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    let startTime = performance.now();
-    let animationFrameId;
-
-    const render = (now) => {
-      animationFrameId = requestAnimationFrame(render);
-      if (!isVisible) return;
-
-      const elapsedTime = (now - startTime) * 0.001;
-
-      mouseX += (targetMouseX - mouseX) * 0.05;
-      mouseY += (targetMouseY - mouseY) * 0.05;
-
-      const targetIsLight = theme === 'light' ? 1.0 : 0.0;
-      currentIsLight += (targetIsLight - currentIsLight) * 0.08;
-
-      gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
-      gl.uniform1f(timeLocation, elapsedTime);
-      gl.uniform2f(mouseLocation, mouseX, mouseY);
-      gl.uniform1f(isLightLocation, currentIsLight);
-
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
-    };
-
-    animationFrameId = requestAnimationFrame(render);
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('resize', resizeCanvas);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      if (containerRef.current) observer.unobserve(containerRef.current);
-    };
-  }, [theme]);
-
   return (
-    <section 
-      ref={containerRef}
-      className="relative pt-36 pb-20 md:pt-44 md:pb-28 overflow-hidden min-h-[95vh] flex flex-col justify-center select-none gpu-layer"
-    >
-      {/* Liquid Silk WebGL Background Shader */}
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 z-0 pointer-events-none w-full h-full gpu-layer"
-      />
-
-      {/* Dynamic Overlay Tint */}
-      <div className={`absolute inset-0 pointer-events-none z-[1] transition-colors duration-500 ${
-        isLight ? 'bg-white/30' : 'bg-black/20'
-      }`} />
-
+    <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden select-none">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
 
-        {/* Pre-heading Pill Badge */}
+        {/* Pre-heading Badge Pill */}
         <motion.div
-          initial={{ opacity: 0, y: -20, scale: 0.9 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.6, type: 'spring', stiffness: 120 }}
-          className={`inline-flex items-center gap-2 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-full glass-panel text-xs sm:text-sm font-semibold mb-6 sm:mb-8 shadow-xl transition-all cursor-default max-w-full text-center gpu-layer ${
-            isLight
-              ? 'border-indigo-400/40 text-indigo-700 bg-white/80 shadow-indigo-500/10 hover:border-indigo-600/60'
-              : 'border-indigo-500/40 text-indigo-300 bg-black/40 shadow-indigo-500/10 hover:border-cyan-400/60'
-          }`}
+          initial={{ opacity: 0, y: -15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="inline-flex items-center gap-2 mb-6"
         >
-          <span className="flex h-2 w-2 relative flex-shrink-0">
-            <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-              isLight ? 'bg-indigo-600' : 'bg-cyan-400'
-            }`}></span>
-            <span className={`relative inline-flex rounded-full h-2 w-2 ${
-              isLight ? 'bg-indigo-600' : 'bg-cyan-500'
-            }`}></span>
-          </span>
-          <Sparkles className={`w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin-slow flex-shrink-0 ${
-            isLight ? 'text-indigo-600' : 'text-indigo-400'
-          }`} />
-          <span className="truncate uppercase tracking-wider text-[11px] sm:text-xs">Your Complete Digital Solutions Partner</span>
+          <a
+            href="#about"
+            className="badge-resend hover:border-[var(--border-hover)] transition-all text-decoration-none group"
+          >
+            <span className="status-pulse-dot" />
+            <span className="text-[var(--text-heading)] font-medium uppercase tracking-wider text-[11px] sm:text-xs">Your Complete Digital Solutions Partner</span>
+            <ArrowRight className="w-3.5 h-3.5 text-[var(--text-sub)] group-hover:translate-x-0.5 group-hover:text-[var(--text-heading)] transition-transform" />
+          </a>
         </motion.div>
 
         {/* Main Headline */}
         <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="max-w-5xl mx-auto mb-6 sm:mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          className="max-w-5xl mx-auto mb-6"
         >
-          <h1 className={`text-3xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.25] pb-2 break-words drop-shadow-md ${
-            isLight ? 'text-slate-900' : 'text-white'
-          }`}>
-            <motion.span variants={itemVariants} className="inline-block mr-2 sm:mr-3">
-              Transform
-            </motion.span>
-            <motion.span variants={itemVariants} className="inline-block mr-2 sm:mr-3">
-              Your
-            </motion.span>
-            <motion.span variants={itemVariants} className="inline-block mr-2 sm:mr-3">
-              Business
-            </motion.span>
-            <motion.span variants={itemVariants} className="inline-block mr-2 sm:mr-3">
-              with
-            </motion.span>
-            <br className="hidden sm:inline" />
-            <motion.span
-              variants={itemVariants}
-              className={`bg-clip-text text-transparent inline-block font-black mt-1 sm:mt-2 pb-3 px-1 ${
-                isLight
-                  ? 'bg-gradient-to-r from-indigo-600 via-cyan-600 to-indigo-600 drop-shadow-[0_0_25px_rgba(99,102,241,0.4)]'
-                  : 'bg-gradient-to-r from-cyan-300 via-indigo-200 to-cyan-300 drop-shadow-[0_0_35px_rgba(56,189,248,0.6)]'
-              }`}
-            >
+          <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-[var(--text-heading)] leading-[1.08]">
+            Transform Your Business with <br className="hidden sm:inline" />
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--text-heading)] via-[var(--text-body)] to-[var(--text-sub)]">
               Digital Solutions.
-            </motion.span>
+            </span>
           </h1>
         </motion.div>
 
@@ -338,93 +156,195 @@ export default function Hero({ theme = 'dark' }) {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
-          className={`text-lg sm:text-xl max-w-3xl mx-auto font-normal leading-relaxed mb-12 drop-shadow ${
-            isLight ? 'text-slate-700' : 'text-gray-200'
-          }`}
+          transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="text-base sm:text-lg max-w-3xl mx-auto text-[var(--text-sub)] font-normal leading-relaxed mb-10"
         >
-          We create premium websites, business software, mobile applications, cloud solutions,
-          and marketing strategies that help businesses grow faster, work smarter, and achieve long-term success.
+          We create premium websites, business software, mobile applications, cloud solutions, and marketing strategies that help businesses grow faster, work smarter, and achieve long-term success.
         </motion.p>
 
-        {/* CTA Buttons */}
+        {/* Action Buttons */}
         <motion.div
-          initial={{ opacity: 0, y: 25 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.4 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-5 mb-20"
+          transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-12"
         >
-          <motion.a
-            whileHover={{ scale: 1.05, boxShadow: isLight ? '0 10px 40px rgba(79, 70, 229, 0.4)' : '0 10px 40px rgba(0, 240, 255, 0.5)' }}
-            whileTap={{ scale: 0.98 }}
-            href="#contact"
-            className={`btn-primary text-base font-bold px-9 py-4.5 w-full sm:w-auto relative group overflow-hidden gpu-layer ${
-              isLight
-                ? '!bg-gradient-to-r !from-indigo-600 !to-cyan-600'
-                : '!bg-gradient-to-r !from-cyan-400 !to-blue-600'
-            }`}
-          >
-            <span className="relative z-10 flex items-center justify-center gap-2">
-              <span>Start Your Project</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </span>
-          </motion.a>
+          <a href="#contact" className="btn-resend-white w-full sm:w-auto">
+            <span>Start Your Project</span>
+            <ArrowRight className="w-4 h-4" />
+          </a>
 
-          <motion.a
-            whileHover={{ scale: 1.05, backgroundColor: isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.15)' }}
-            whileTap={{ scale: 0.98 }}
-            href="#work"
-            className={`btn-secondary text-base font-bold px-9 py-4.5 w-full sm:w-auto flex items-center justify-center gap-2 backdrop-blur-md gpu-layer ${
-              isLight
-                ? '!bg-white/80 !border-slate-300 !text-slate-900 shadow-md'
-                : '!bg-white/10 !border-white/20 !text-white'
-            }`}
-          >
+          <a href="#work" className="btn-resend-ghost w-full sm:w-auto">
+            <Code2 className="w-4 h-4 text-[var(--text-sub)]" />
             <span>View Portfolio</span>
-            <ChevronRight className={`w-4 h-4 ${isLight ? 'text-slate-600' : 'text-gray-300'}`} />
-          </motion.a>
+          </a>
         </motion.div>
 
-        {/* Stats Grid with Glass Elevation */}
+        {/* Fully Interactive Code Terminal Window */}
         <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
+          initial={{ opacity: 0, y: 25, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="max-w-4xl mx-auto rounded-xl bg-[#080808] border border-white/15 shadow-2xl text-left overflow-hidden relative mb-14"
+        >
+          {/* Terminal Header */}
+          <div className="flex flex-wrap items-center justify-between px-4 py-2.5 bg-[#0d0d0d] border-b border-white/10 gap-2">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+              <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
+              <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
+              <span className="ml-1.5 text-xs font-mono text-gray-400 flex items-center gap-1.5">
+                <Terminal className="w-3.5 h-3.5 text-gray-400" />
+                deploy.config.ts
+              </span>
+            </div>
+
+            {/* Language Tabs with Sliding Spring Animation */}
+            <div className="flex items-center gap-1 bg-black/40 p-1 rounded-lg border border-white/5 relative">
+              {['react', 'node', 'python', 'curl'].map((tab) => {
+                const isActive = activeTab === tab;
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => {
+                      setActiveTab(tab);
+                      setExecutionOutput(null);
+                    }}
+                    className={`relative px-2.5 py-1 text-xs font-mono rounded-md transition-colors ${
+                      isActive ? 'text-white font-medium' : 'text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeTabIndicator"
+                        className="absolute inset-0 bg-white/15 rounded-md"
+                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                      />
+                    )}
+                    <span className="relative z-10">{tab}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Controls: Run Code, Reset, & Copy */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleRun}
+                disabled={isRunning}
+                className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-mono hover:bg-emerald-500/30 transition-all cursor-pointer"
+                title="Execute API Code"
+              >
+                <Play className={`w-3 h-3 fill-emerald-400 ${isRunning ? 'animate-spin' : ''}`} />
+                <span>{isRunning ? 'Running...' : 'Run API'}</span>
+              </button>
+
+              <button
+                onClick={handleReset}
+                className="p-1.5 rounded-md hover:bg-white/10 text-gray-400 hover:text-white transition-all cursor-pointer"
+                title="Reset Code"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                onClick={handleCopy}
+                className="p-1.5 rounded-md hover:bg-white/10 text-gray-400 hover:text-white transition-all cursor-pointer"
+                title="Copy Code"
+              >
+                {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+
+          {/* Interactive Code Area */}
+          <div className="relative px-5 py-4 font-mono text-xs sm:text-sm overflow-y-auto max-h-[220px] bg-[#050505] leading-relaxed text-gray-300">
+            <div className="space-y-0.5">
+              {currentCode.split('\n').map((line, i) => (
+                <div key={i} className="flex items-start gap-4">
+                  <span className="w-6 text-right select-none text-gray-600 font-mono text-xs shrink-0">{i + 1}</span>
+                  <span className="font-mono text-xs sm:text-sm whitespace-pre">
+                    {line.replace(/(import|export|from|const|await|async|function|return|new|client|print|curl)/g, '🔑$1🔑')
+                         .split('🔑').map((part, idx) => {
+                           if (['import', 'export', 'from', 'const', 'await', 'async', 'function', 'return', 'new', 'curl'].includes(part)) {
+                             return <span key={idx} className="text-[#ff4f00] font-semibold">{part}</span>;
+                           }
+                           if (part.includes("'") || part.includes('"')) {
+                             return <span key={idx} className="text-emerald-400">{part}</span>;
+                           }
+                           if (part.includes('//') || part.includes('#')) {
+                             return <span key={idx} className="text-gray-500 opacity-80">{part}</span>;
+                           }
+                           return <span key={idx}>{part}</span>;
+                         })}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Interactive Live Execution Console Output Drawer */}
+          <AnimatePresence>
+            {executionOutput && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="bg-[#030303] border-t border-white/10 p-4 font-mono text-xs text-gray-300"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="text-emerald-400 font-semibold">{executionOutput.status}</span>
+                    <span className="text-gray-500">|</span>
+                    <span className="text-gray-400">Response Latency: {executionOutput.latency}</span>
+                  </div>
+                  <button
+                    onClick={() => setExecutionOutput(null)}
+                    className="text-gray-500 hover:text-white text-[11px]"
+                  >
+                    Clear Console
+                  </button>
+                </div>
+                <pre className="text-gray-400 overflow-x-auto text-[11px] leading-relaxed bg-[#080808] p-2.5 rounded-md border border-white/5">
+                  <code>{JSON.stringify(executionOutput.payload, null, 2)}</code>
+                </pre>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        {/* Stats Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className={`grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5 max-w-5xl mx-auto pt-10 border-t ${
-            isLight ? 'border-slate-300/60' : 'border-white/15'
-          }`}
+          transition={{ duration: 0.6, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-4xl mx-auto"
         >
           {stats.map((stat) => {
             const Icon = stat.icon;
             return (
-              <motion.div
+              <div
                 key={stat.label}
-                variants={itemVariants}
-                whileHover={{ y: -8, scale: 1.03 }}
-                className={`glass-card p-6 rounded-2xl text-center flex flex-col items-center justify-center relative overflow-hidden group border backdrop-blur-md gpu-layer ${
-                  isLight
-                    ? 'bg-white/80 border-slate-200/80 text-slate-900 shadow-lg hover:border-indigo-500/40'
-                    : 'bg-black/30 border-white/15 text-white hover:border-cyan-400/50'
-                }`}
+                onMouseMove={handleMouseMove}
+                className="spotlight-card p-5 rounded-xl text-left border border-[var(--border-color)] bg-[var(--bg-card)]"
               >
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform ${
-                  isLight ? 'bg-indigo-50' : 'bg-white/10'
-                }`}>
-                  <Icon className={`w-6 h-6 ${stat.color}`} />
+                <div className="w-8 h-8 rounded-lg bg-[var(--pill-bg)] border border-[var(--border-color)] flex items-center justify-center mb-3 text-[var(--text-heading)]">
+                  <Icon className="w-4 h-4" />
                 </div>
-                <div className="text-3xl sm:text-4xl font-extrabold text-gradient mb-1">
+                <div className="font-mono text-2xl font-bold text-[var(--text-heading)] mb-0.5">
                   {stat.number}
                 </div>
-                <div className={`text-xs sm:text-sm font-medium ${
-                  isLight ? 'text-slate-600' : 'text-gray-300'
-                }`}>
+                <div className="text-xs text-[var(--text-sub)] font-medium">
                   {stat.label}
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </motion.div>
+
       </div>
     </section>
   );
